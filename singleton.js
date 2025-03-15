@@ -11,7 +11,23 @@ const Config = (function () {
     function createInstance() {
         return {
             language: "es", // idioma por defecto
-            theme: "dark"   // tema oscuro por defecto
+            theme: "dark", // tema oscuro por defecto
+
+            //Método para cambiar el idioma
+            setLanguage: function (lang) {
+                this.language = lang;
+                // Evento para notificar que la configuración ha cambiado
+                document.dispatchEvent(new CustomEvent('config-changed'));
+                return this;
+            },
+
+            //Método para cambiar el tema
+            setTheme: function (theme) {
+                this.theme = theme;
+                // Evento para notificar que la configuración ha cambiado
+                document.dispatchEvent(new CustomEvent('config-changed'));
+                return this;
+            }
         };
     }
 
@@ -29,15 +45,25 @@ const Config = (function () {
     };
 })();
 
-// Aquí solicitamos la configuración de la app por primera vez
-const appConfig1 = Config.getInstance();
 
-// Aquí volvemos a pedir la configuración, pero esta vez es la misma (la ya creada)
-const appConfig2 = Config.getInstance();
+// Ejecutamos este código de demostración
+if (typeof window !== 'undefined') {
+    // El código de consola se mantiene para referencia
+    const appConfig1 = Config.getInstance();
+    const appConfig2 = Config.getInstance();
+    console.log("Configuración inicial:");
+    console.log("Idioma:", appConfig1.language);
+    console.log("Tema:", appConfig1.theme);
+    console.log("¿Son la misma instancia?", appConfig1 === appConfig2);
+} else {
+    // Para ejecución con Node.js
+    const appConfig1 = Config.getInstance();
+    const appConfig2 = Config.getInstance();
+    console.log(appConfig1.language); // "es"
+    console.log(appConfig1 === appConfig2); // true
+}
 
-// Imprime el idioma configurado, que es "es" (español)
-console.log(appConfig1.language); // "es"
-
-// Verificamos que `appConfig1` y `appConfig2` son el mismo objeto
-// Esto confirma que el Singleton está funcionando (solo hay una instancia compartida)
-console.log(appConfig1 === appConfig2); // true
+// Exportamos Config para usarlo en el navegador
+if (typeof window !== 'undefined') {
+    window.Config = Config;
+}

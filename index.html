@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demostración del Patrón Singleton</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <h1>Demostración del Patrón Singleton</h1>
+
+    <div class="explanation">
+      <p>El patrón Singleton garantiza que solo exista una instancia de una clase en toda la aplicación.</p>
+      <p>En este ejemplo, tenemos dos componentes que acceden a la misma configuración global.</p>
+    </div>
+
+    <div class="components-container">
+      <!-- Componente 1 -->
+      <div class="component" id="component1">
+        <h2>Componente 1</h2>
+        <div class="config-display">
+          <p>Idioma: <span class="language-value">es</span></p>
+          <p>Tema: <span class="theme-value">dark</span></p>
+        </div>
+        <div class="controls">
+          <h3>Cambiar configuración:</h3>
+          <div class="control-group">
+            <label>Idioma:</label>
+            <select class="language-select">
+              <option value="es">Español</option>
+              <option value="en">Inglés</option>
+              <option value="fr">Francés</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label>Tema:</label>
+            <select class="theme-select">
+              <option value="dark">Oscuro</option>
+              <option value="light">Claro</option>
+              <option value="blue">Azul</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Componente 2 -->
+      <div class="component" id="component2">
+        <h2>Componente 2</h2>
+        <div class="config-display">
+          <p>Idioma: <span class="language-value">es</span></p>
+          <p>Tema: <span class="theme-value">dark</span></p>
+        </div>
+        <div class="controls">
+          <h3>Cambiar configuración:</h3>
+          <div class="control-group">
+            <label>Idioma:</label>
+            <select class="language-select">
+              <option value="es">Español</option>
+              <option value="en">Inglés</option>
+              <option value="fr">Francés</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label>Tema:</label>
+            <select class="theme-select">
+              <option value="dark">Oscuro</option>
+              <option value="light">Claro</option>
+              <option value="blue">Azul</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="singleton-test">
+      <h2>Prueba de Singleton</h2>
+      <button id="test-singleton">Verificar instancias</button>
+      <div id="test-result" class="test-result"></div>
+    </div>
+
+    <div class="code-explanation">
+      <h2>Explicación del Código</h2>
+      <p>El patrón Singleton se implementa mediante una función autoinvocada (IIFE) que:</p>
+      <ol>
+        <li>Mantiene una variable privada <code>instance</code> que almacena la única instancia</li>
+        <li>Proporciona un método <code>getInstance()</code> que crea la instancia si no existe o devuelve la existente
+        </li>
+        <li>Garantiza que todos los componentes accedan a la misma configuración</li>
+      </ol>
+      <p>Cuando cambias la configuración en cualquier componente, todos los componentes se actualizan porque comparten
+        la misma instancia.</p>
+    </div>
+  </div>
+
+  <!-- Cargar el script del Singleton -->
+  <script src="singleton.js"></script>
+
+  <!-- Script para la interacción con la interfaz -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Obtenemos la instancia de configuración
+      const config = Config.getInstance();
+
+      // Función para actualizar todos los displays
+      function updateAllDisplays() {
+        // Actualizamos todos los displays de idioma
+        document.querySelectorAll('.language-value').forEach(el => {
+          el.textContent = config.language;
+        });
+
+        // Actualizamos todos los displays de tema
+        document.querySelectorAll('.theme-value').forEach(el => {
+          el.textContent = config.theme;
+        });
+
+        // Actualizamos todos los selectores para reflejar el valor actual
+        document.querySelectorAll('.language-select').forEach(el => {
+          el.value = config.language;
+        });
+
+        document.querySelectorAll('.theme-select').forEach(el => {
+          el.value = config.theme;
+        });
+
+        // Aplicamos el tema a la página
+        document.body.className = config.theme;
+      }
+
+      // Escuchamos cambios en la configuración
+      document.addEventListener('config-changed', updateAllDisplays);
+
+      // Configuramos los listeners para los selectores de idioma
+      document.querySelectorAll('.language-select').forEach(select => {
+        select.addEventListener('change', function () {
+          config.setLanguage(this.value);
+        });
+      });
+
+      // Configuramos los listeners para los selectores de tema
+      document.querySelectorAll('.theme-select').forEach(select => {
+        select.addEventListener('change', function () {
+          config.setTheme(this.value);
+        });
+      });
+
+      // Botón para probar que las instancias son las mismas
+      document.getElementById('test-singleton').addEventListener('click', function () {
+        const instance1 = Config.getInstance();
+        const instance2 = Config.getInstance();
+        const areEqual = instance1 === instance2;
+
+        const resultElement = document.getElementById('test-result');
+        resultElement.innerHTML = `
+                    <p>¿Son la misma instancia? <strong>${areEqual ? 'SÍ' : 'NO'}</strong></p>
+                    <p>Esto demuestra que el patrón Singleton está funcionando correctamente.</p>
+                `;
+        resultElement.classList.add('visible');
+      });
+
+      // Inicializamos los displays
+      updateAllDisplays();
+    });
+  </script>
+</body>
+
+</html>
